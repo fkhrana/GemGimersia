@@ -20,33 +20,50 @@ public class PlayerController : MonoBehaviour
     SpriteRenderer sr;
     GameManager gm;
 
+    // --- ignore input after resume (unscaled time)
+    float ignoreInputUntil = 0f;
+    // require release of held inputs before accepting new input
+    bool blockUntilRelease = false;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
-        // don't cache GameManager here — Awake order between objects is not deterministic
         Debug.Log("[PlayerController] Awake - components cached.");
     }
 
     void Start()
     {
-        // Freeze horizontal movement until started
         rb.linearVelocity = Vector2.zero;
-
-        // Safe place to cache GameManager.Instance because all Awake() calls have run
         gm = GameManager.Instance;
         if (gm == null)
-            Debug.LogWarning("[PlayerController] Start - GameManager.Instance is null. OnPlayerDied calls will fallback to GameManager.Instance when needed.");
+            Debug.LogWarning("[PlayerController] Start - GameManager.Instance is null.");
         else
             Debug.Log("[PlayerController] Start - GameManager instance cached.");
     }
 
     void Update()
     {
+        // detect held state
+        bool isMouseHeld = Input.GetMouseButton(0) || Input.GetMouseButton(1) || Input.GetMouseButton(2);
+        bool isSpaceHeld = Input.GetKey(KeyCode.Space);
+
+        // Determine whether to skip input:
+        bool timeBlock = Time.unscaledTime < ignoreInputUntil;
+        bool holdBlock = blockUntilRelease && (isMouseHeld || isSpaceHeld);
+        bool skipInput = timeBlock || holdBlock;
+
+        // If blockUntilRelease was true and no buttons are held and timeout passed, clear the block.
+        if (blockUntilRelease && !isMouseHeld && !isSpaceHeld && !timeBlock)
+        {
+            blockUntilRelease = false;
+            Debug.Log("[PlayerController] blockUntilRelease cleared - inputs released and timeout passed.");
+        }
+
         // Input only Space or left mouse
         if (!started)
         {
-            if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
+            if (!skipInput && (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)))
             {
                 started = true;
                 rb.linearVelocity = new Vector2(direction * moveSpeed, rb.linearVelocity.y);
@@ -56,7 +73,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
+            if (!skipInput && (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)))
             {
                 // Reset vertical velocity then apply jump impulse
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
@@ -64,7 +81,7 @@ public class PlayerController : MonoBehaviour
                 Debug.Log("[PlayerController] Input detected - Flap applied (jumpForce).");
             }
 
-            // Keep horizontal velocity steady
+            // Always enforce horizontal velocity while started so player keeps moving even if skipInput is active.
             rb.linearVelocity = new Vector2(direction * moveSpeed, rb.linearVelocity.y);
         }
 
@@ -72,9 +89,7 @@ public class PlayerController : MonoBehaviour
         Vector3 pos = transform.position;
         float clampedY = Mathf.Clamp(pos.y, minY, maxY);
         if (clampedY != pos.y)
-        {
             Debug.Log($"[PlayerController] Position clamped from y={pos.y} to y={clampedY}.");
-        }
         pos.y = clampedY;
         transform.position = pos;
     }
@@ -94,7 +109,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // Helper to ensure physics awake when changing scene
     public void rbWakeUp()
     {
         if (rb != null)
@@ -106,34 +120,29 @@ public class PlayerController : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        // If hit obstacle, ground, or ceiling => immediate restart to GameplayFuture
         if (collision.collider.CompareTag("Obstacle") ||
             collision.collider.CompareTag("Ground") ||
             collision.collider.CompareTag("Ceiling"))
         {
             Debug.Log($"[PlayerController] OnCollisionEnter2D with '{collision.collider.tag}'. Triggering OnPlayerDied.");
-
-            // fallback: in case gm wasn't cached in Start(), re-resolve here
-            if (gm == null)
-                gm = GameManager.Instance;
-
-            if (gm != null)
-            {
-                gm.OnPlayerDied();
-            }
-            else
-            {
-                Debug.LogError("[PlayerController] OnCollisionEnter2D - GameManager.Instance is null, cannot call OnPlayerDied().");
-            }
+            if (gm == null) gm = GameManager.Instance;
+            if (gm != null) gm.OnPlayerDied();
+            else Debug.LogError("[PlayerController] OnCollisionEnter2D - GameManager.Instance is null.");
         }
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        // Note: Key pickup handled by KeyItem to avoid duplicate scene loads
         if (other.CompareTag("Key"))
-        {
             Debug.Log("[PlayerController] OnTriggerEnter2D detected Key trigger. (Key handling is in KeyItem)");
-        }
+    }
+
+    // public API: ignore input for a short unscaled time window and require release of held inputs
+    // Call from UIManager after countdown. Keep Time.timeScale controlled in UIManager coroutine.
+    public void IgnoreInputForSeconds(float seconds)
+    {
+        ignoreInputUntil = Time.unscaledTime + Mathf.Max(0f, seconds);
+        blockUntilRelease = true;
+        Debug.Log($"[PlayerController] Ignoring input until unscaled time {ignoreInputUntil:F2} (for {seconds:F2}s). blockUntilRelease={blockUntilRelease}");
     }
 }

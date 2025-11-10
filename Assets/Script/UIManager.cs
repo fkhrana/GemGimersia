@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
+using UnityEngine.EventSystems;
 
 public class UIManager : MonoBehaviour
 {
@@ -18,6 +19,10 @@ public class UIManager : MonoBehaviour
     [Header("Countdown (TextMeshPro)")]
     public TextMeshProUGUI countdownText; // big overlay text for 3..2..1
 
+    // public flag used by PlayerController to detect UI pause state
+    [HideInInspector]
+    public bool isPaused = false;
+
     void Awake()
     {
         if (Instance == null)
@@ -32,7 +37,6 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    #region Start/Info
     public void ShowStartText(string s)
     {
         if (startText != null)
@@ -70,21 +74,20 @@ public class UIManager : MonoBehaviour
             Debug.Log("[UIManager] HideInfoText called.");
         }
     }
-    #endregion
 
     #region Pause
     public void OnPauseButton()
     {
-        // Pause game
         Time.timeScale = 0f;
         if (pausePanel != null) pausePanel.SetActive(true);
+        isPaused = true;
         Debug.Log("[UIManager] OnPauseButton - game paused and pausePanel shown.");
     }
 
     public void OnBackToMenuFromPause()
     {
-        // Unpause time scale to load menu cleanly
         Time.timeScale = 1f;
+        isPaused = false;
         Debug.Log("[UIManager] OnBackToMenuFromPause - returning to MainMenu.");
         GameSession.Reset();
         SceneManager.LoadScene(SceneNames.MainMenu);
@@ -94,7 +97,6 @@ public class UIManager : MonoBehaviour
     {
         if (pausePanel != null) pausePanel.SetActive(false);
         Debug.Log("[UIManager] OnContinueFromPause - hiding pausePanel and starting countdown.");
-        // Start countdown and resume using realtime wait
         StartCoroutine(ResumeWithCountdown());
     }
 
@@ -107,17 +109,35 @@ public class UIManager : MonoBehaviour
             {
                 countdownText.text = i.ToString();
                 Debug.Log($"[UIManager] Countdown: {i}");
+                // use realtime wait so countdown runs while timescale=0
                 yield return new WaitForSecondsRealtime(1f);
             }
             countdownText.gameObject.SetActive(false);
         }
-        // Resume game
+
+        // Clear UI selection to avoid click propagation
+        if (EventSystem.current != null)
+            EventSystem.current.SetSelectedGameObject(null);
+
+        // Wait a frame for UI state to settle
+        yield return null;
+
+        // Wait until mouse button and Space are released to avoid click/hold-through.
+        yield return new WaitUntil(() => !Input.GetMouseButton(0) && !Input.GetKey(KeyCode.Space));
+
+        // Resume: clear pause flag then restore timescale
+        isPaused = false;
         Time.timeScale = 1f;
-        Debug.Log("[UIManager] Countdown finished. Game resumed (Time.timeScale = 1).");
+        Debug.Log("[UIManager] Countdown finished and inputs released. Game resumed (Time.timeScale = 1).");
+
+        // Small extra safety window to ignore accidental immediate presses
+        var player = (GameManager.Instance != null) ? GameManager.Instance.player : null;
+        if (player != null)
+            player.IgnoreInputForSeconds(0.12f);
     }
     #endregion
 
-    #region Win
+    #region Win / other UI...
     public void ShowWinPopup()
     {
         if (winPanel != null)
@@ -127,10 +147,10 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    // Called by Win panel button
     public void OnBackToMenuFromWin()
     {
         Time.timeScale = 1f; // ensure timescale normal
+        isPaused = false;
         Debug.Log("[UIManager] OnBackToMenuFromWin - returning to MainMenu and resetting session.");
         GameSession.Reset();
         SceneManager.LoadScene(SceneNames.MainMenu);
