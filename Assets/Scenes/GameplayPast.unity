@@ -2958,7 +2958,7 @@ MonoBehaviour:
   camMaxX: 0
   levelBoundsCollider: {fileID: 0}
   paddingX: 2
-  useAutoCameraBounds: 1
+  useAutoCameraBounds: 0
 --- !u!1001 &1927423752
 PrefabInstance:
   m_ObjectHideFlags: 0

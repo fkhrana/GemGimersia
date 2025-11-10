@@ -672,7 +672,7 @@ MonoBehaviour:
   camMaxX: 0
   levelBoundsCollider: {fileID: 0}
   paddingX: 2
-  useAutoCameraBounds: 1
+  useAutoCameraBounds: 0
 --- !u!1 &436519265
 GameObject:
   m_ObjectHideFlags: 0
@@ -1040,6 +1040,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 212068707}
   smoothTime: 0.1
+  sideOffset: 5
+  preferPlayerOnLeft: 0
   minBounds: {x: -39, y: -5}
   maxBounds: {x: 0, y: 5}
   showEdgeLines: 1
