@@ -668,11 +668,10 @@ MonoBehaviour:
   mainCamera: {fileID: 519420031}
   returnArrivalThreshold: 0.5
   overrideCameraBounds: 1
-  camMinBounds: {x: 0, y: 0}
-  camMaxBounds: {x: 0, y: 0}
+  camMinX: -39
+  camMaxX: 0
   levelBoundsCollider: {fileID: 0}
   paddingX: 2
-  paddingY: 0.5
   useAutoCameraBounds: 1
 --- !u!1 &436519265
 GameObject:
@@ -1021,7 +1020,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.01, y: 0, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1040,18 +1039,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 212068707}
-  offset: {x: 0, y: 0, z: 0}
-  sideOffset: 0
-  preferPlayerOnLeft: 0
   smoothTime: 0.1
-  followX: 1
-  followY: 1
-  minBounds: {x: -40, y: -5}
-  maxBounds: {x: 10, y: 5}
-  showGizmosAlways: 1
-  drawViewportGizmo: 0
+  minBounds: {x: -39, y: -5}
+  maxBounds: {x: 0, y: 5}
   showEdgeLines: 1
-  gizmoColor: {r: 0, g: 1, b: 0.8717489, a: 0.27450982}
   edgeLineColor: {r: 1, g: 0.25, b: 0.25, a: 1}
 --- !u!1 &619394800
 GameObject:

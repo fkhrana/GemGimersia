@@ -3,10 +3,12 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// GameManager per-scene. Besides game flow, it helps setup CameraFollow:
-/// - assign camera target
-/// - set left/right bias per scene
-/// - apply camera bounds (manual or auto from level collider)
+/// Simplified GameManager camera setup for this project:
+/// - Keeps existing game flow (start, death, machine win).
+/// - Simplifies camera setup: assigns CameraFollow target and writes only left/right (X) bounds
+///   into CameraFollow.minBounds.x / CameraFollow.maxBounds.x.
+/// - Supports manual camMinX/camMaxX override or automatic calculation from a level Collider2D.
+/// - Keeps API compatibility with existing scripts (SetTarget / SetPreferPlayerOnLeft calls still OK).
 /// </summary>
 public class GameManager : MonoBehaviour
 {
@@ -20,18 +22,20 @@ public class GameManager : MonoBehaviour
     [Header("Settings")]
     public float returnArrivalThreshold = 0.5f;
 
-    [Header("Camera bounds override (manual)")]
+    [Header("Camera bounds (simple X-only)")]
+    [Tooltip("If true, use manual camMinX/camMaxX values (camera center X).")]
     public bool overrideCameraBounds = false;
-    public Vector2 camMinBounds = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
-    public Vector2 camMaxBounds = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
+    [Tooltip("Manual camera center min X")]
+    public float camMinX = float.NegativeInfinity;
+    [Tooltip("Manual camera center max X")]
+    public float camMaxX = float.PositiveInfinity;
 
     [Header("Auto camera bounds (optional)")]
-    [Tooltip("If assigned, bounds will be computed from this Collider2D (e.g. BoxCollider2D) that encloses the level.")]
+    [Tooltip("If assigned and useAutoCameraBounds true, min/max X will be computed from this Collider2D.")]
     public Collider2D levelBoundsCollider;
-    [Tooltip("Padding (world units) added from level edges so camera doesn't stick to edge.")]
+    [Tooltip("Padding (world units) to leave between camera edge and level edge.")]
     public float paddingX = 2f;
-    public float paddingY = 0.5f;
-    [Tooltip("If true, compute camera bounds from levelBoundsCollider. Otherwise use manual override or none.")]
+    [Tooltip("If true and levelBoundsCollider assigned, compute camera bounds automatically.")]
     public bool useAutoCameraBounds = true;
 
     bool gameOver = false;
@@ -70,7 +74,7 @@ public class GameManager : MonoBehaviour
 
             Debug.Log("[GameManager] GameplayFuture initialized: player waiting for start.");
 
-            // Camera: player on RIGHT side in Future
+            // Camera: no side-bias in simplified manager but keep call for compatibility
             SetupCameraForScene(preferPlayerOnLeft: false);
         }
         else if (scene == SceneNames.GameplayPast)
@@ -101,7 +105,6 @@ public class GameManager : MonoBehaviour
 
             Debug.Log("[GameManager] GameplayPast initialized: player moving to the right.");
 
-            // Camera: player on LEFT side in Past
             SetupCameraForScene(preferPlayerOnLeft: true);
         }
         else
@@ -112,7 +115,8 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Setup camera: assign target, set left/right bias, and apply bounds either manual or auto.
+    /// Setup camera: assign target, optionally compute/apply X-only bounds.
+    /// Writes X bounds into CameraFollow.minBounds.x / maxBounds.x to match simplified CameraFollow.
     /// </summary>
     void SetupCameraForScene(bool preferPlayerOnLeft)
     {
@@ -129,93 +133,72 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        // Assign player as camera target
         camFollow.SetTarget(player.transform);
-        camFollow.SetPreferPlayerOnLeft(preferPlayerOnLeft);
-        Debug.Log($"[GameManager] CameraSetup: preferPlayerOnLeft={preferPlayerOnLeft}, target={player.name}");
 
-        // Decide bounds: auto (from level collider), or manual override
+        // Keep compatibility: allow GameManager to still signal preferPlayerOnLeft
+        camFollow.SetPreferPlayerOnLeft(preferPlayerOnLeft);
+
+        // Determine bounds X
+        float minX = float.NegativeInfinity;
+        float maxX = float.PositiveInfinity;
+
         if (useAutoCameraBounds && levelBoundsCollider != null)
         {
-            ApplyAutoCameraBounds(camFollow, levelBoundsCollider, paddingX, paddingY);
+            // Calculate based on level collider and camera half width (orthographic expected)
+            Bounds levelB = levelBoundsCollider.bounds;
+            float levelLeft = levelB.min.x;
+            float levelRight = levelB.max.x;
+
+            float halfWidth = CameraHalfWidthWorld(mainCamera, player != null ? player.transform : null);
+
+            minX = levelLeft + halfWidth + paddingX;
+            maxX = levelRight - halfWidth - paddingX;
+
+            if (minX > maxX)
+            {
+                float center = (levelLeft + levelRight) * 0.5f;
+                minX = maxX = center;
+                Debug.LogWarning("[GameManager] Level narrower than camera viewport; X bounds collapsed to center.");
+            }
+
+            Debug.Log($"[GameManager] Auto camera X bounds computed: minX={minX:F2}, maxX={maxX:F2}");
         }
         else if (overrideCameraBounds)
         {
-            camFollow.minBounds = camMinBounds;
-            camFollow.maxBounds = camMaxBounds;
-            Debug.Log($"[GameManager] Applied manual camera bounds: min={camMinBounds}, max={camMaxBounds}");
+            minX = camMinX;
+            maxX = camMaxX;
+            Debug.Log($"[GameManager] Manual camera X bounds used: minX={minX}, maxX={maxX}");
         }
         else
         {
-            Debug.Log("[GameManager] No camera bounds applied (infinite movement).");
+            Debug.Log("[GameManager] No camera X bounds applied (infinite movement).");
         }
+
+        // Apply to CameraFollow's Vector2 min/max (preserve Y components)
+        Vector2 newMin = camFollow.minBounds;
+        Vector2 newMax = camFollow.maxBounds;
+        newMin.x = minX;
+        newMax.x = maxX;
+        camFollow.minBounds = newMin;
+        camFollow.maxBounds = newMax;
     }
 
-    /// <summary>
-    /// Compute camera center bounds from a Collider2D that encloses the playable level area.
-    /// Works for orthographic camera (and approximates for perspective).
-    /// </summary>
-    void ApplyAutoCameraBounds(CameraFollow camFollow, Collider2D levelCollider, float padX, float padY)
+    float CameraHalfWidthWorld(Camera cam, Transform reference = null)
     {
-        if (mainCamera == null || camFollow == null)
-        {
-            Debug.LogWarning("[GameManager] Cannot apply auto camera bounds: mainCamera or camFollow null.");
-            return;
-        }
-
-        Bounds levelBounds = levelCollider.bounds;
-        float levelLeft = levelBounds.min.x;
-        float levelRight = levelBounds.max.x;
-        float levelBottom = levelBounds.min.y;
-        float levelTop = levelBounds.max.y;
-
-        Camera cam = mainCamera;
-        Vector2 half = CameraHalfSizeWorld(cam, player != null ? player.transform : null);
-
-        // compute camera center min/max so that camera viewport doesn't go past level edges,
-        // but leave padding so player still has space when camera is clamped.
-        float minCamX = levelLeft + half.x + padX;
-        float maxCamX = levelRight - half.x - padX;
-        float minCamY = levelBottom + half.y + padY;
-        float maxCamY = levelTop - half.y - padY;
-
-        // If computed values are inverted (level smaller than viewport), fall back to level center
-        if (minCamX > maxCamX)
-        {
-            float centerX = (levelLeft + levelRight) * 0.5f;
-            minCamX = maxCamX = centerX;
-            Debug.LogWarning("[GameManager] Level width smaller than camera viewport; X bounds collapsed to center.");
-        }
-        if (minCamY > maxCamY)
-        {
-            float centerY = (levelBottom + levelTop) * 0.5f;
-            minCamY = maxCamY = centerY;
-            Debug.LogWarning("[GameManager] Level height smaller than camera viewport; Y bounds collapsed to center.");
-        }
-
-        camFollow.minBounds = new Vector2(minCamX, minCamY);
-        camFollow.maxBounds = new Vector2(maxCamX, maxCamY);
-        Debug.Log($"[GameManager] Auto camera bounds applied. levelBounds={levelBounds}, half={half}, camMin={camFollow.minBounds}, camMax={camFollow.maxBounds}");
-    }
-
-    Vector2 CameraHalfSizeWorld(Camera cam, Transform reference = null)
-    {
-        if (cam == null) return Vector2.zero;
-
+        if (cam == null) return 0f;
         if (cam.orthographic)
         {
-            float halfHeight = cam.orthographicSize;
-            float halfWidth = halfHeight * cam.aspect;
-            return new Vector2(halfWidth, halfHeight);
+            float halfH = cam.orthographicSize;
+            return halfH * cam.aspect;
         }
         else
         {
-            // approximate for perspective using distance to reference (or default to 10)
             float distance = 10f;
             if (reference != null)
                 distance = Mathf.Abs(cam.transform.position.z - reference.position.z);
-            float halfHeight = Mathf.Tan(cam.fieldOfView * Mathf.Deg2Rad * 0.5f) * distance;
-            float halfWidth = halfHeight * cam.aspect;
-            return new Vector2(halfWidth, halfHeight);
+            float halfH = Mathf.Tan(cam.fieldOfView * Mathf.Deg2Rad * 0.5f) * distance;
+            return halfH * cam.aspect;
         }
     }
 
