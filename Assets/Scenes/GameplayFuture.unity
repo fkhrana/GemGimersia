@@ -1616,8 +1616,9 @@ MonoBehaviour:
   winPanel: {fileID: 0}
   countdownText: {fileID: 2052545282}
   isPaused: 0
-  resumeSoftFallDuration: 0.5
-  resumeSoftFallGravityMultiplier: 0.05
+  resumeSoftFallDuration: 0.3
+  resumeSoftFallGravityMultiplier: 0.1
+  resumeDownwardNudge: -0.1
 --- !u!1 &1678296241
 GameObject:
   m_ObjectHideFlags: 0

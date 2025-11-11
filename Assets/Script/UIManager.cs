@@ -28,6 +28,8 @@ public class UIManager : MonoBehaviour
     public float resumeSoftFallDuration = 0.25f;
     [Tooltip("Multiplier applied to player's gravityScale while soft-fall (0.0 - 1.0 typical).")]
     public float resumeSoftFallGravityMultiplier = 0.45f;
+    [Tooltip("Downward nudge applied to airborne player to ensure falling begins (set to 0 to disable).")]
+    public float resumeDownwardNudge = -0.15f;
 
     void Awake()
     {
@@ -139,19 +141,33 @@ public class UIManager : MonoBehaviour
         // Wait until mouse button and Space are released to avoid click/hold-through.
         yield return new WaitUntil(() => !Input.GetMouseButton(0) && !Input.GetKey(KeyCode.Space));
 
-        // Resume: clear pause flag then restore timescale
-        isPaused = false;
-        Time.timeScale = 1f;
-        Debug.Log("[UIManager] Countdown finished and inputs released. Game resumed (Time.timeScale = 1).");
-
-        // Small extra safety window + soft-fall
+        // BEFORE resuming physics, prepare player so effects take place immediately when physics restarts
         var player = (GameManager.Instance != null) ? GameManager.Instance.player : null;
         if (player != null)
         {
-            player.IgnoreInputForSeconds(0.12f);
+            // discard any pending queued input (prevents queued jump)
+            player.ClearPendingInput();
+
+            // cancel upward momentum immediately (so no auto jump)
             player.ForceDropVertical();
+
+            // brief ignore window for any accidental immediate presses (unscaled)
+            player.IgnoreInputForSeconds(0.12f);
+
+            // give a small downward nudge if player is airborne so SoftFall is visible
+            if (resumeDownwardNudge != 0f)
+                player.NudgeDownIfAirborne(resumeDownwardNudge);
+
+            // apply soft-fall BEFORE physics resumes so reduced gravity is in effect when physics restarts
             player.SoftFallForSeconds(resumeSoftFallDuration, resumeSoftFallGravityMultiplier);
+
+            Debug.Log("[UIManager] Player prepared for resume: ForceDrop + IgnoreInput + Nudge + SoftFall applied (before timescale=1).");
         }
+
+        // Now resume: clear pause flag then restore timescale
+        isPaused = false;
+        Time.timeScale = 1f;
+        Debug.Log("[UIManager] Countdown finished and inputs released. Game resumed (Time.timeScale = 1).");
     }
     #endregion
 

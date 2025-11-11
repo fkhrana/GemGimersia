@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 // PlayerController: input = Space or Left Mouse Button
-// Uses Rigidbody2D.linearVelocity (project convention) and physics in FixedUpdate.
+// Uses Rigidbody2D.linearVelocity and physics in FixedUpdate.
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour
 {
@@ -25,6 +25,12 @@ public class PlayerController : MonoBehaviour
     public bool clampToCameraTop = false;
     [Tooltip("Padding (world units) between player's top and camera top.")]
     public float topPadding = 0.05f;
+
+    [Header("Ground check (optional)")]
+    [Tooltip("Layers considered ground for grounded detection. Set to your ground/platform layer for best results.")]
+    public LayerMask groundLayerMask = ~0; // default: everything
+    [Tooltip("Extra distance for ground check raycast.")]
+    public float groundCheckExtra = 0.05f;
 
     [HideInInspector]
     public Rigidbody2D rb;
@@ -51,13 +57,15 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
+        // cache gravity scale early
+        if (rb != null) originalGravityScale = rb.gravityScale;
         Debug.Log("[PlayerController] Awake - components cached.");
     }
 
     void Start()
     {
         // Freeze horizontal movement until started
-        rb.linearVelocity = Vector2.zero;
+        if (rb != null) rb.linearVelocity = Vector2.zero;
 
         // cache GameManager.Instance
         gm = GameManager.Instance;
@@ -75,9 +83,6 @@ public class PlayerController : MonoBehaviour
             if (col != null) playerHalfHeight = col.bounds.extents.y;
             else playerHalfHeight = 0.5f;
         }
-
-        // remember original gravityScale
-        originalGravityScale = rb.gravityScale;
     }
 
     void Update()
@@ -132,6 +137,8 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (rb == null) return;
+
         // Handle start request
         if (startRequested)
         {
@@ -285,6 +292,32 @@ public class PlayerController : MonoBehaviour
         Debug.Log("[PlayerController] ForceDropVertical called - upward velocity cleared.");
     }
 
+    // If airborne (no ground detected below within playerHalfHeight + extra),
+    // give a small downward nudge to ensure falling begins so soft-fall is visible.
+    public void NudgeDownIfAirborne(float nudge = -0.15f)
+    {
+        if (rb == null) return;
+        if (!IsGrounded())
+        {
+            Vector2 lv = rb.linearVelocity;
+            if (lv.y >= 0f) lv.y = nudge;
+            rb.linearVelocity = lv;
+            Debug.Log($"[PlayerController] NudgeDownIfAirborne applied (nudge={nudge}).");
+        }
+        else
+        {
+            Debug.Log("[PlayerController] NudgeDownIfAirborne skipped because player is grounded.");
+        }
+    }
+
+    // Ground check using short raycast downward
+    public bool IsGrounded()
+    {
+        // raycast from player position downward for playerHalfHeight + groundCheckExtra
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, playerHalfHeight + groundCheckExtra, groundLayerMask);
+        return hit.collider != null;
+    }
+
     // Soft fall: temporarily reduce gravityScale so falling is slower for a short real-time duration.
     public void SoftFallForSeconds(float seconds, float gravityMultiplier)
     {
@@ -297,6 +330,9 @@ public class PlayerController : MonoBehaviour
     {
         if (rb == null)
             yield break;
+
+        // ensure physics awake and gravity applied before resume
+        rb.WakeUp();
 
         rb.gravityScale = originalGravityScale * Mathf.Clamp(gravityMultiplier, 0.01f, 5f);
         Debug.Log($"[PlayerController] SoftFall started: gravityScale set to {rb.gravityScale:F2} for {seconds:F2}s");
