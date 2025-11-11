@@ -1615,6 +1615,9 @@ MonoBehaviour:
   pausePanel: {fileID: 279851617}
   winPanel: {fileID: 0}
   countdownText: {fileID: 2052545282}
+  isPaused: 0
+  resumeSoftFallDuration: 0.5
+  resumeSoftFallGravityMultiplier: 0.05
 --- !u!1 &1678296241
 GameObject:
   m_ObjectHideFlags: 0
@@ -2773,7 +2776,7 @@ Transform:
   m_GameObject: {fileID: 2050997565}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -19.57, y: 5.26, z: 0}
+  m_LocalPosition: {x: -19.57, y: 10.4, z: 0}
   m_LocalScale: {x: 57.606514, y: 1.9923406, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2926,6 +2929,18 @@ PrefabInstance:
     - target: {fileID: 2386920666622413657, guid: 8be00833ea48e4c4d90daf45302f1b67, type: 3}
       propertyPath: started
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2386920666622413657, guid: 8be00833ea48e4c4d90daf45302f1b67, type: 3}
+      propertyPath: topPadding
+      value: -0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2386920666622413657, guid: 8be00833ea48e4c4d90daf45302f1b67, type: 3}
+      propertyPath: followCamera
+      value: 
+      objectReference: {fileID: 519420031}
+    - target: {fileID: 2386920666622413657, guid: 8be00833ea48e4c4d90daf45302f1b67, type: 3}
+      propertyPath: clampToCameraTop
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2856626565056165201, guid: 8be00833ea48e4c4d90daf45302f1b67, type: 3}
       propertyPath: m_Name

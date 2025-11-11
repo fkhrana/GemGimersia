@@ -19,9 +19,15 @@ public class UIManager : MonoBehaviour
     [Header("Countdown (TextMeshPro)")]
     public TextMeshProUGUI countdownText; // big overlay text for 3..2..1
 
-    // public flag used by PlayerController to detect UI pause state
     [HideInInspector]
     public bool isPaused = false;
+
+    // soft-fall tuning (exposed so you can tweak in inspector)
+    [Header("Resume Soft-Fall (optional)")]
+    [Tooltip("Duration in seconds (real time) to apply reduced gravity just after resume.")]
+    public float resumeSoftFallDuration = 0.25f;
+    [Tooltip("Multiplier applied to player's gravityScale while soft-fall (0.0 - 1.0 typical).")]
+    public float resumeSoftFallGravityMultiplier = 0.45f;
 
     void Awake()
     {
@@ -37,6 +43,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    #region Start/Info
     public void ShowStartText(string s)
     {
         if (startText != null)
@@ -74,6 +81,7 @@ public class UIManager : MonoBehaviour
             Debug.Log("[UIManager] HideInfoText called.");
         }
     }
+    #endregion
 
     #region Pause
     public void OnPauseButton()
@@ -97,6 +105,12 @@ public class UIManager : MonoBehaviour
     {
         if (pausePanel != null) pausePanel.SetActive(false);
         Debug.Log("[UIManager] OnContinueFromPause - hiding pausePanel and starting countdown.");
+
+        // Clear any pending inputs that might have been captured during pause
+        var playerForClear = (GameManager.Instance != null) ? GameManager.Instance.player : null;
+        if (playerForClear != null)
+            playerForClear.ClearPendingInput();
+
         StartCoroutine(ResumeWithCountdown());
     }
 
@@ -130,10 +144,14 @@ public class UIManager : MonoBehaviour
         Time.timeScale = 1f;
         Debug.Log("[UIManager] Countdown finished and inputs released. Game resumed (Time.timeScale = 1).");
 
-        // Small extra safety window to ignore accidental immediate presses
+        // Small extra safety window + soft-fall
         var player = (GameManager.Instance != null) ? GameManager.Instance.player : null;
         if (player != null)
+        {
             player.IgnoreInputForSeconds(0.12f);
+            player.ForceDropVertical();
+            player.SoftFallForSeconds(resumeSoftFallDuration, resumeSoftFallGravityMultiplier);
+        }
     }
     #endregion
 
