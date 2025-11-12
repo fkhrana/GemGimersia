@@ -36,6 +36,10 @@ public class UIManager : MonoBehaviour
     [Tooltip("Assign any Buttons that should be disabled while an overlay is open (eg. Pause icon, Pause panel buttons).")]
     public Button[] pauseButtons;
 
+    [Header("Win input controls")]
+    [Tooltip("Assign any Buttons on the Win popup that should be disabled while an overlay is open.")]
+    public Button[] winButtons;
+
     void Awake()
     {
         if (Instance == null)
@@ -176,7 +180,7 @@ public class UIManager : MonoBehaviour
     }
     #endregion
 
-    #region Pause input helpers
+    #region Pause & Win input helpers
     /// <summary>
     /// Enable or disable assigned pause-related Buttons (useful while overlays are open).
     /// Assign in Inspector all Buttons that should be disabled while an overlay is open.
@@ -187,18 +191,30 @@ public class UIManager : MonoBehaviour
         for (int i = 0; i < pauseButtons.Length; i++)
         {
             if (pauseButtons[i] != null)
-            {
                 pauseButtons[i].interactable = enabled;
-            }
         }
         Debug.Log($"[UIManager] SetPauseInputsEnabled({enabled}) applied to {pauseButtons.Length} buttons.");
     }
+
+    /// <summary>
+    /// Enable or disable assigned win-related Buttons (useful while overlays are open).
+    /// </summary>
+    public void SetWinInputsEnabled(bool enabled)
+    {
+        if (winButtons == null || winButtons.Length == 0) return;
+        for (int i = 0; i < winButtons.Length; i++)
+        {
+            if (winButtons[i] != null)
+                winButtons[i].interactable = enabled;
+        }
+        Debug.Log($"[UIManager] SetWinInputsEnabled({enabled}) applied to {winButtons.Length} buttons.");
+    }
     #endregion
 
-    #region Overlay helper (for Pause menu buttons)
+    #region Overlay helper (for Pause/Win menu buttons)
     /// <summary>
     /// Open an overlay scene (Levels / Settings / Credits) via OverlaySceneLoader.
-    /// Use this for Pause menu buttons instead of wiring directly to OverlaySceneLoader,
+    /// Use this for Pause or Win menu buttons instead of wiring directly to OverlaySceneLoader,
     /// so the OnClick target remains valid across scene reloads.
     /// </summary>
     /// <param name="sceneName">Name of the overlay scene (must be in Build Settings)</param>
@@ -222,8 +238,14 @@ public class UIManager : MonoBehaviour
         if (pausePanel != null && isPaused)
             pausePanel.SetActive(false);
 
-        // Disable pause-related buttons so they can't be used while overlay is open
+        // Hide winPanel right away if it's active (when called from Win popup)
+        if (winPanel != null && winPanel.activeSelf)
+            winPanel.SetActive(false);
+
+        // Disable pause-related inputs so they can't be used while overlay is open
         SetPauseInputsEnabled(false);
+        // Disable win-related inputs as well
+        SetWinInputsEnabled(false);
 
         OverlaySceneLoader.Instance.LoadOverlay(sceneName);
     }
