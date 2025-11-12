@@ -350,6 +350,7 @@ GameObject:
   m_Component:
   - component: {fileID: 82120658}
   - component: {fileID: 82120657}
+  - component: {fileID: 82120659}
   m_Layer: 0
   m_Name: GIMERSIA_OBSTACLE_TIANG1_0 (1)
   m_TagString: Untagged
@@ -427,6 +428,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!68 &82120659
+EdgeCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 82120656}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_EdgeRadius: 0
+  m_Points:
+  - {x: -0.7578287, y: 1.0905218}
+  - {x: -0.9691925, y: -0.4042492}
+  - {x: -0.7938614, y: -1.0107274}
+  - {x: 0.3084488, y: -0.85347223}
+  - {x: 0.7578287, y: -0.34577608}
+  m_AdjacentStartPoint: {x: 0, y: 0}
+  m_AdjacentEndPoint: {x: 0, y: 0}
+  m_UseAdjacentStartPoint: 0
+  m_UseAdjacentEndPoint: 0
 --- !u!1 &143389746
 GameObject:
   m_ObjectHideFlags: 0
@@ -1824,9 +1871,10 @@ GameObject:
   m_Component:
   - component: {fileID: 646995448}
   - component: {fileID: 646995449}
+  - component: {fileID: 646995450}
   m_Layer: 0
   m_Name: GIMERSIA_BG PAST_SAMBUNGAN START-END_0 (1)
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1901,6 +1949,52 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!61 &646995450
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 646995447}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -0.09438133, y: -2.3864522}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 18.07, y: 6.9}
+    newSize: {x: 18.07, y: 6.9}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 17.881237, y: 2.1270952}
+  m_EdgeRadius: 0
 --- !u!1 &681839212
 GameObject:
   m_ObjectHideFlags: 0
@@ -2417,6 +2511,7 @@ GameObject:
   m_Component:
   - component: {fileID: 813389699}
   - component: {fileID: 813389698}
+  - component: {fileID: 813389700}
   m_Layer: 0
   m_Name: GIMERSIA_OBSTACLE_MACHINE3_0
   m_TagString: Untagged
@@ -2494,6 +2589,62 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!68 &813389700
+EdgeCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 813389697}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_EdgeRadius: 0
+  m_Points:
+  - {x: -3.6281142, y: -2.0442247}
+  - {x: -2.902977, y: -1.028295}
+  - {x: -2.109953, y: -0.48357975}
+  - {x: -1.4391956, y: -0.78119856}
+  - {x: -0.3485773, y: -0.22237307}
+  - {x: 1.409943, y: 1.3128371}
+  - {x: 3.2613752, y: 2.8902059}
+  - {x: 3.2854948, y: 2.0467331}
+  - {x: 3.6554492, y: 1.4736652}
+  - {x: 3.2342749, y: 1.321743}
+  - {x: 2.5686734, y: 1.0643499}
+  - {x: 1.7649001, y: 0.15337603}
+  - {x: 0.19073276, y: -0.65031946}
+  - {x: 1.3675846, y: -1.3687737}
+  - {x: 0.90247047, y: -2.6816716}
+  m_AdjacentStartPoint: {x: 0, y: 0}
+  m_AdjacentEndPoint: {x: 0, y: 0}
+  m_UseAdjacentStartPoint: 0
+  m_UseAdjacentEndPoint: 0
 --- !u!1 &824518631
 GameObject:
   m_ObjectHideFlags: 0
@@ -2830,9 +2981,10 @@ GameObject:
   m_Component:
   - component: {fileID: 877754117}
   - component: {fileID: 877754118}
+  - component: {fileID: 877754119}
   m_Layer: 0
   m_Name: GIMERSIA_BG PAST_START_0
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2907,6 +3059,52 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!61 &877754119
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 877754116}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -0.017560959, y: -3.7574315}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 15.71, y: 9.3}
+    newSize: {x: 15.71, y: 9.3}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 15.745121, y: 1.7851362}
+  m_EdgeRadius: 0
 --- !u!1 &980468509
 GameObject:
   m_ObjectHideFlags: 0
@@ -4511,9 +4709,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1703222703}
   - component: {fileID: 1703222702}
+  - component: {fileID: 1703222704}
   m_Layer: 0
   m_Name: GIMERSIA_OBSTACLE_TIANG1_1
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4588,6 +4787,55 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -180}
+--- !u!68 &1703222704
+EdgeCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1703222701}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_EdgeRadius: 0
+  m_Points:
+  - {x: -0.60447407, y: -2.440454}
+  - {x: -0.7021198, y: -0.17857957}
+  - {x: -0.9129181, y: 1.1261916}
+  - {x: -0.8120384, y: 2.0780187}
+  - {x: -0.040655136, y: 2.6606448}
+  - {x: 0.67666245, y: 1.6477218}
+  - {x: 0.9409027, y: 0.81843376}
+  - {x: 0.71457005, y: -2.5138514}
+  m_AdjacentStartPoint: {x: 0, y: 0}
+  m_AdjacentEndPoint: {x: 0, y: 0}
+  m_UseAdjacentStartPoint: 0
+  m_UseAdjacentEndPoint: 0
 --- !u!1 &1732012315
 GameObject:
   m_ObjectHideFlags: 0
@@ -4598,9 +4846,11 @@ GameObject:
   m_Component:
   - component: {fileID: 1732012316}
   - component: {fileID: 1732012317}
+  - component: {fileID: 1732012319}
+  - component: {fileID: 1732012318}
   m_Layer: 0
   m_Name: GIMERSIA_OBSTACLE_MACHINE1_0
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4675,6 +4925,84 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!68 &1732012318
+EdgeCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1732012315}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_EdgeRadius: 0
+  m_Points:
+  - {x: -4.6351604, y: -2.6536653}
+  - {x: -4.0843496, y: -1.8437675}
+  - {x: -4.070262, y: -1.5211352}
+  - {x: -3.63221, y: -1.4462674}
+  - {x: -3.2886188, y: -0.10142733}
+  - {x: -2.838136, y: 0.83544946}
+  - {x: -2.0174623, y: 2.149246}
+  - {x: -1.8500806, y: 2.3898218}
+  - {x: -1.6325972, y: 2.588784}
+  - {x: -1.3525732, y: 2.846843}
+  - {x: -1.0185752, y: 2.7283258}
+  - {x: 0.31236756, y: 2.2481303}
+  - {x: 0.843732, y: 2.0213797}
+  - {x: 1.2195768, y: 1.901171}
+  - {x: 1.5161456, y: 1.7166884}
+  - {x: 1.5970508, y: 1.5634816}
+  - {x: 2.437964, y: 0.22898349}
+  - {x: 2.6863809, y: 0.7624022}
+  - {x: 3.105205, y: 0.7005413}
+  - {x: 3.4996572, y: 0.6419724}
+  - {x: 3.7812269, y: 0.3529083}
+  - {x: 3.8337421, y: 0.13230878}
+  - {x: 4.414001, y: 0.04941365}
+  - {x: 4.634666, y: -0.881067}
+  m_AdjacentStartPoint: {x: 0, y: 0}
+  m_AdjacentEndPoint: {x: 0, y: 0}
+  m_UseAdjacentStartPoint: 0
+  m_UseAdjacentEndPoint: 0
+--- !u!114 &1732012319
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1732012315}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e473bd74f00fa84fa88aba4bda0448c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  reloadSceneOnHit: 1
 --- !u!1 &1757720422
 GameObject:
   m_ObjectHideFlags: 0
@@ -4685,9 +5013,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1757720424}
   - component: {fileID: 1757720423}
+  - component: {fileID: 1757720425}
   m_Layer: 0
   m_Name: GIMERSIA_OBSTACLE_TIANG1_0
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4762,6 +5091,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -180}
+--- !u!68 &1757720425
+EdgeCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1757720422}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_EdgeRadius: 0
+  m_Points:
+  - {x: -0.98981, y: 1.0642586}
+  - {x: -0.83296967, y: -0.38308358}
+  - {x: -0.29430008, y: -0.97602844}
+  - {x: 0.85897636, y: -1.082608}
+  - {x: 0.8980627, y: 1.0642581}
+  m_AdjacentStartPoint: {x: 0, y: 0}
+  m_AdjacentEndPoint: {x: 0, y: 0}
+  m_UseAdjacentStartPoint: 0
+  m_UseAdjacentEndPoint: 0
 --- !u!1 &1760060485
 GameObject:
   m_ObjectHideFlags: 0
@@ -4772,9 +5147,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1760060487}
   - component: {fileID: 1760060486}
+  - component: {fileID: 1760060488}
   m_Layer: 0
   m_Name: GIMERSIA_OBSTACLE_TIANG2_0
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4849,6 +5225,55 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!68 &1760060488
+EdgeCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1760060485}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_EdgeRadius: 0
+  m_Points:
+  - {x: -0.5431137, y: -3.0790079}
+  - {x: -0.5533371, y: -2.1030955}
+  - {x: -0.57180786, y: 1.8309348}
+  - {x: -0.72678375, y: 2.962237}
+  - {x: -0.56279755, y: 3.6148345}
+  - {x: -0.0064430237, y: 4.4088755}
+  - {x: 0.6091461, y: 3.9587846}
+  - {x: 0.74176407, y: 2.6022592}
+  m_AdjacentStartPoint: {x: 0, y: 0}
+  m_AdjacentEndPoint: {x: 0, y: 0}
+  m_UseAdjacentStartPoint: 0
+  m_UseAdjacentEndPoint: 0
 --- !u!1 &1775937292
 GameObject:
   m_ObjectHideFlags: 0
@@ -5548,7 +5973,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 1.0338464, y: -1.9569234}
+  m_Offset: {x: -1.1828629, y: -2.5431597}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.7617333, y: 0.9519453}
@@ -5558,7 +5983,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 3.9499998, y: 4.33}
+  m_Size: {x: 3.7668016, y: 3.1575274}
   m_EdgeRadius: 0
 --- !u!4 &1927423757 stripped
 Transform:
@@ -5599,7 +6024,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0.60089743, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -5609,7 +6034,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 3.97, y: 4.09}
+  m_Size: {x: 2.7682054, y: 4.09}
   m_EdgeRadius: 0
 --- !u!1 &1967268716
 GameObject:
@@ -5674,6 +6099,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1989887369}
   - component: {fileID: 1989887368}
+  - component: {fileID: 1989887370}
   m_Layer: 0
   m_Name: GIMERSIA_OBSTACLE_TIANG1_1 (1)
   m_TagString: Untagged
@@ -5751,6 +6177,54 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!68 &1989887370
+EdgeCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1989887367}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_EdgeRadius: 0
+  m_Points:
+  - {x: -0.7844324, y: -2.1544447}
+  - {x: -0.9832382, y: 0.7713444}
+  - {x: -0.54048157, y: 1.953435}
+  - {x: 0.06732941, y: 2.7576702}
+  - {x: 0.78839874, y: 1.9895494}
+  - {x: 0.81362915, y: 1.6325147}
+  - {x: 0.94401646, y: -0.21278381}
+  m_AdjacentStartPoint: {x: 0, y: 0}
+  m_AdjacentEndPoint: {x: 0, y: 0}
+  m_UseAdjacentStartPoint: 0
+  m_UseAdjacentEndPoint: 0
 --- !u!1 &2024157647
 GameObject:
   m_ObjectHideFlags: 0
