@@ -32,6 +32,12 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Extra distance for ground check raycast.")]
     public float groundCheckExtra = 0.05f;
 
+    [Header("Child flip settings (optional)")]
+    [Tooltip("Optional: explicitly assign child SpriteRenderers (Head, Hands, Legs, Jetpack Sprite, etc.). If empty, script will auto-find SpriteRenderers under the player.")]
+    public SpriteRenderer[] childSpriteRenderers;
+    [Tooltip("Optional: assign child Transforms (e.g. Jetpack particle root) that should be flipped by changing localScale.x.")]
+    public Transform[] childFlipScale;
+
     [HideInInspector]
     public Rigidbody2D rb;
     SpriteRenderer sr;
@@ -39,6 +45,10 @@ public class PlayerController : MonoBehaviour
 
     // preserve inspector flip state
     bool initialFlipX = false;
+
+    // child initial flip states / scales
+    bool[] childInitialFlip;
+    Vector3[] childInitialScale;
 
     // ignore input after resume (unscaled time)
     float ignoreInputUntil = 0f;
@@ -61,12 +71,50 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
 
-        // save inspector flipX so runtime flip respects inspector default
+        // save inspector flipX so runtime flip respects inspector default for body
         if (sr != null) initialFlipX = sr.flipX;
 
         // cache gravity scale early
         if (rb != null) originalGravityScale = rb.gravityScale;
-        Debug.Log("[PlayerController] Awake - components cached.");
+
+        // If no child SpriteRenderers assigned, auto-find them (exclude the main body sr)
+        if (childSpriteRenderers == null || childSpriteRenderers.Length == 0)
+        {
+            var all = GetComponentsInChildren<SpriteRenderer>(true);
+            var list = new System.Collections.Generic.List<SpriteRenderer>();
+            foreach (var s in all)
+            {
+                if (s == sr) continue; // skip body itself
+                list.Add(s);
+            }
+            childSpriteRenderers = list.ToArray();
+        }
+
+        // cache child initial flip booleans
+        if (childSpriteRenderers != null && childSpriteRenderers.Length > 0)
+        {
+            childInitialFlip = new bool[childSpriteRenderers.Length];
+            for (int i = 0; i < childSpriteRenderers.Length; i++)
+                childInitialFlip[i] = childSpriteRenderers[i].flipX;
+        }
+        else
+        {
+            childInitialFlip = new bool[0];
+        }
+
+        // cache child initial local scales for transforms that will be flipped via scale
+        if (childFlipScale != null && childFlipScale.Length > 0)
+        {
+            childInitialScale = new Vector3[childFlipScale.Length];
+            for (int i = 0; i < childFlipScale.Length; i++)
+                childInitialScale[i] = childFlipScale[i] != null ? childFlipScale[i].localScale : Vector3.one;
+        }
+        else
+        {
+            childInitialScale = new Vector3[0];
+        }
+
+        Debug.Log("[PlayerController] Awake - components cached. Child sprite count=" + childSpriteRenderers.Length);
     }
 
     void Start()
@@ -233,10 +281,32 @@ public class PlayerController : MonoBehaviour
         direction = Mathf.Clamp(newDir, -1, 1);
 
         // apply flip relative to inspector initialFlipX so editor flip is respected
+        bool shouldFaceRight = direction > 0;
+
         if (sr != null)
         {
-            bool shouldFaceRight = direction > 0;
             sr.flipX = initialFlipX ^ shouldFaceRight;
+        }
+
+        // apply same logical flip to child SpriteRenderers (respect their initial inspector flip)
+        for (int i = 0; i < childSpriteRenderers.Length; i++)
+        {
+            var cs = childSpriteRenderers[i];
+            if (cs == null) continue;
+            bool init = (i < childInitialFlip.Length) ? childInitialFlip[i] : false;
+            cs.flipX = init ^ shouldFaceRight;
+        }
+
+        // flip transforms by scale for those specified in childFlipScale (optional)
+        for (int i = 0; i < childFlipScale.Length; i++)
+        {
+            var t = childFlipScale[i];
+            if (t == null) continue;
+            Vector3 initScale = (i < childInitialScale.Length) ? childInitialScale[i] : t.localScale;
+            float absX = Mathf.Abs(initScale.x);
+            // set x to +abs for facing right, -abs for facing left
+            float newX = shouldFaceRight ? absX : -absX;
+            t.localScale = new Vector3(newX, initScale.y, initScale.z);
         }
 
         if (started)
