@@ -16,16 +16,25 @@ public class MainMenuManager : MonoBehaviour
         SceneManager.LoadScene(SceneNames.GameplayFuture);
     }
 
-    public void OnSettingsButton()
+    // New: open Level selection scene
+    public void OnLevelButton()
     {
-        Debug.Log("[MainMenuManager] Settings button pressed.");
-        // TODO: show settings panel (implement UI panel in editor)
+        Debug.Log("[MainMenuManager] Level button pressed. Loading Levels scene.");
+        SceneManager.LoadScene(SceneNames.Levels);
     }
 
+    // Settings: load Settings scene
+    public void OnSettingsButton()
+    {
+        Debug.Log("[MainMenuManager] Settings button pressed. Loading Settings scene.");
+        SceneManager.LoadScene(SceneNames.Settings);
+    }
+
+    // Credits: load Credits scene
     public void OnCreditsButton()
     {
-        Debug.Log("[MainMenuManager] Credits button pressed.");
-        // TODO: show credits panel
+        Debug.Log("[MainMenuManager] Credits button pressed. Loading Credits scene.");
+        SceneManager.LoadScene(SceneNames.Credits);
     }
 
     public void OnQuitButton()
