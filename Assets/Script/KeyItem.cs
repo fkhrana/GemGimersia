@@ -32,6 +32,15 @@ public class KeyItem : MonoBehaviour
         pickedUp = true;
         Debug.Log("[KeyItem] Player triggered Key. Playing effects and scheduling scene load.");
 
+        // If player exists, freeze them in place so they stay exactly where they picked the key.
+        var playerController = other.GetComponent<PlayerController>();
+        if (playerController != null)
+        {
+            playerController.FreezeInPlaceForPickup();
+            // Also clear pending inputs so the player doesn't accidentally jump/hold during delay
+            playerController.ClearPendingInput();
+        }
+
         // Record pickup in session
         GameSession.hasKey = true;
         GameSession.lastKeyPosition = other.transform.position;

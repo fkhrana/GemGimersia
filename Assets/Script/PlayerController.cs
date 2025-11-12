@@ -85,10 +85,21 @@ public class PlayerController : MonoBehaviour
     // small epsilon for bound comparisons
     const float boundEpsilon = 0.0005f;
 
+    // saved physics state for temporary freeze
+    RigidbodyConstraints2D savedConstraints = RigidbodyConstraints2D.None;
+    float savedGravityScale = 1f;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
+
+        // Enable interpolation to smooth visual motion between physics steps.
+        // This reduces visible jitter caused by physics-update/render-update mismatch.
+#if UNITY_2019_3_OR_NEWER
+        if (rb != null)
+            rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+#endif
 
         // save inspector flipX so runtime flip respects inspector default for body
         if (sr != null) initialFlipX = sr.flipX;
@@ -392,6 +403,67 @@ public class PlayerController : MonoBehaviour
             rb.WakeUp();
             Debug.Log("[PlayerController] rbWakeUp called - Rigidbody woke up.");
         }
+    }
+
+    /// <summary>
+    /// Restore gravityScale to the original value cached at Awake and ensure Rigidbody is awake.
+    /// Call this before scene transitions if you want the player to be affected by gravity again.
+    /// </summary>
+    public void RestoreGravity()
+    {
+        if (rb == null) return;
+        rb.gravityScale = originalGravityScale;
+        rb.WakeUp();
+        Debug.Log($"[PlayerController] RestoreGravity called - gravityScale restored to {rb.gravityScale:F2}");
+    }
+
+    /// <summary>
+    /// Freeze the player in place for the pickup delay:
+    /// - save current gravityScale & constraints
+    /// - zero velocity, zero angular velocity
+    /// - set gravityScale = 0 and freeze constraints (FreezeAll)
+    /// - set started = false so movement enforcement doesn't run
+    /// This is intended to be called when the player picks up the key and you want the player to remain exactly in place
+    /// while waiting for the scene transition.
+    /// </summary>
+    public void FreezeInPlaceForPickup()
+    {
+        if (rb == null) return;
+
+        // save current physics state
+        savedConstraints = rb.constraints;
+        savedGravityScale = rb.gravityScale;
+
+        // stop motion and disable gravity
+        rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+        rb.gravityScale = 0f;
+
+        // freeze position & rotation
+        rb.constraints = RigidbodyConstraints2D.FreezeAll;
+
+        // prevent PlayerController from enforcing horizontal movement while frozen
+        started = false;
+
+        rb.WakeUp();
+
+        Debug.Log("[PlayerController] FreezeInPlaceForPickup called - player frozen in place (gravity=0, constraints=FreezeAll).");
+    }
+
+    /// <summary>
+    /// Optionally unfreeze if you ever need to restore the previous physics state at runtime.
+    /// Not required if a scene change is about to happen, but provided for completeness.
+    /// </summary>
+    public void UnfreezeFromPickup()
+    {
+        if (rb == null) return;
+
+        // restore saved physics state
+        rb.constraints = savedConstraints;
+        rb.gravityScale = savedGravityScale;
+        rb.WakeUp();
+
+        Debug.Log("[PlayerController] UnfreezeFromPickup called - restored previous gravity & constraints.");
     }
 
     void OnTriggerEnter2D(Collider2D other)

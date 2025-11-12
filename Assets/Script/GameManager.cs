@@ -88,9 +88,25 @@ public class GameManager : MonoBehaviour
         {
             if (GameSession.hasKey)
             {
+                // Compute a safe spawn position slightly above the recorded key position to avoid
+                // spawning inside the ground/platform and causing immediate physics overlap/jitter.
                 Vector3 spawnPos = GameSession.lastKeyPosition + Vector3.up * 0.1f;
+
+                // If we have access to a SpriteRenderer or Collider2D on the player, use its extents
+                // to guarantee we are fully clear of geometry.
+                var sr = player != null ? player.GetComponent<SpriteRenderer>() : null;
+                var col = player != null ? player.GetComponent<Collider2D>() : null;
+                float halfHeight = 0.5f;
+                if (sr != null)
+                    halfHeight = sr.bounds.extents.y;
+                else if (col != null)
+                    halfHeight = col.bounds.extents.y;
+
+                // Add a small safety margin above the recorded position
+                spawnPos = GameSession.lastKeyPosition + Vector3.up * (halfHeight + 0.08f);
+
                 player.transform.position = spawnPos;
-                Debug.Log($"[GameManager] GameplayPast: spawning player at lastKeyPosition {spawnPos}.");
+                Debug.Log($"[GameManager] GameplayPast: spawning player at safe lastKeyPosition {spawnPos}.");
             }
             else
             {
@@ -99,10 +115,13 @@ public class GameManager : MonoBehaviour
 
             player.SetDirection(+1);
             player.started = true;
+
+            // Ensure rigidbody is awake and positioned properly before setting velocity
             player.rbWakeUp();
 
             if (player.rb != null)
             {
+                // set horizontal movement immediately
                 player.rb.linearVelocity = new Vector2(player.moveSpeed * player.direction, player.rb.linearVelocity.y);
                 Debug.Log($"[GameManager] GameplayPast: player started moving with linearVelocity.x = {player.rb.linearVelocity.x}");
             }
@@ -244,7 +263,7 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(SceneNames.GameplayFuture);
     }
 
-    
+
 
     // Called by MachineTrigger when player reaches the time machine in Past
     public void OnPlayerReachedMachine()
