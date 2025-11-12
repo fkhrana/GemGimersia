@@ -1,8 +1,12 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-// PlayerController: input = Space or Left Mouse Button
-// Uses Rigidbody2D.linearVelocity and physics in FixedUpdate.
+/// <summary>
+/// PlayerController: input = Space or Left Mouse Button
+/// Uses Rigidbody2D.linearVelocity and physics in FixedUpdate.
+/// Improved X-bound handling to avoid jitter by not reapplying horizontal
+/// speed when player is at the bound and would be pushed outside.
+/// </summary>
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour
 {
@@ -25,6 +29,18 @@ public class PlayerController : MonoBehaviour
     public bool clampToCameraTop = false;
     [Tooltip("Padding (world units) between player's top and camera top.")]
     public float topPadding = 0.05f;
+
+    [Header("X bounds (horizontal limits)")]
+    [Tooltip("When true, enable X bounds clamping for player.")]
+    public bool useXBounds = false;
+    [Tooltip("Manual min X (ignored if clampToCameraFollowBounds = true and a CameraFollow exists).")]
+    public float minX = float.NegativeInfinity;
+    [Tooltip("Manual max X (ignored if clampToCameraFollowBounds = true and a CameraFollow exists).")]
+    public float maxX = float.PositiveInfinity;
+    [Tooltip("If true, read min/max X from CameraFollow.minBounds.x / maxBounds.x (GameManager typically sets these).")]
+    public bool clampToCameraFollowBounds = true;
+    [Tooltip("If true, when player reaches X bound they stop (started=false). Otherwise only horizontal velocity is zeroed and position clamped.")]
+    public bool stopAtBounds = true;
 
     [Header("Ground check (optional)")]
     [Tooltip("Layers considered ground for grounded detection. Set to your ground/platform layer for best results.")]
@@ -65,6 +81,9 @@ public class PlayerController : MonoBehaviour
     // soft-fall
     float originalGravityScale = 1f;
     Coroutine softFallCoroutine = null;
+
+    // small epsilon for bound comparisons
+    const float boundEpsilon = 0.0005f;
 
     void Awake()
     {
@@ -194,12 +213,39 @@ public class PlayerController : MonoBehaviour
     {
         if (rb == null) return;
 
-        // Handle start request
+        // compute effective X bounds early so we can prevent enforcement if we're clamped
+        float effectiveMinX = minX;
+        float effectiveMaxX = maxX;
+        if (useXBounds && clampToCameraFollowBounds)
+        {
+            Camera cam = Camera.main != null ? Camera.main : followCamera;
+            if (cam != null)
+            {
+                var cf = cam.GetComponent<CameraFollow>();
+                if (cf != null)
+                {
+                    effectiveMinX = cf.minBounds.x;
+                    effectiveMaxX = cf.maxBounds.x;
+                }
+            }
+        }
+
+        // HANDLE startRequest: only set horizontal speed if not at bound trying to move outwards
         if (startRequested)
         {
             started = true;
             Vector2 lv = rb.linearVelocity;
-            lv.x = direction * moveSpeed;
+
+            bool atLeftBound = useXBounds && rb.position.x <= effectiveMinX + boundEpsilon;
+            bool atRightBound = useXBounds && rb.position.x >= effectiveMaxX - boundEpsilon;
+            bool tryingToMoveLeft = direction < 0;
+            bool tryingToMoveRight = direction > 0;
+
+            bool blockStartHorizontal = useXBounds && !stopAtBounds && ((atLeftBound && tryingToMoveLeft) || (atRightBound && tryingToMoveRight));
+
+            if (!blockStartHorizontal)
+                lv.x = direction * moveSpeed;
+
             rb.linearVelocity = lv;
             startRequested = false;
             Debug.Log($"[PlayerController] Game started by input (FixedUpdate). Direction={direction}, linearVelocity.x set to {rb.linearVelocity.x}.");
@@ -210,8 +256,22 @@ public class PlayerController : MonoBehaviour
         if (started)
         {
             Vector2 lv = rb.linearVelocity;
-            lv.x = direction * moveSpeed;
-            rb.linearVelocity = lv;
+
+            bool atLeftBound = useXBounds && rb.position.x <= effectiveMinX + boundEpsilon;
+            bool atRightBound = useXBounds && rb.position.x >= effectiveMaxX - boundEpsilon;
+            bool tryingToMoveLeft = direction < 0;
+            bool tryingToMoveRight = direction > 0;
+
+            // If at bound and continuing movement would push outside, skip enforcing horizontal speed.
+            if (useXBounds && !stopAtBounds && ((atLeftBound && tryingToMoveLeft) || (atRightBound && tryingToMoveRight)))
+            {
+                // skip enforcement to avoid pushing out of bound (this prevents jitter)
+            }
+            else
+            {
+                lv.x = direction * moveSpeed;
+                rb.linearVelocity = lv;
+            }
         }
 
         // Handle jump request in physics step (use linearVelocity)
@@ -274,26 +334,56 @@ public class PlayerController : MonoBehaviour
             if (newLv.y < 0f) newLv.y = 0f;
             rb.linearVelocity = newLv;
         }
+
+        // --- Horizontal X bounds handling
+        if (useXBounds)
+        {
+            Vector2 pos = rb.position;
+            if (pos.x < effectiveMinX || pos.x > effectiveMaxX)
+            {
+                // clamp position
+                float clampedX = Mathf.Clamp(pos.x, effectiveMinX, effectiveMaxX);
+                rb.position = new Vector2(clampedX, pos.y);
+                rb.MovePosition(rb.position);
+
+                // zero horizontal velocity
+                Vector2 newLv = rb.linearVelocity;
+                newLv.x = 0f;
+                rb.linearVelocity = newLv;
+
+                // optionally stop player (so he won't resume moving automatically)
+                if (stopAtBounds)
+                {
+                    started = false;
+                    Debug.Log("[PlayerController] Reached X bound - stopped player and cleared horizontal velocity.");
+                    if (UIManager.Instance != null)
+                        UIManager.Instance.ShowStartText("Press Space or Left Click to start");
+                }
+                else
+                {
+                    Debug.Log("[PlayerController] Reached X bound - clamped position and zeroed horizontal velocity (no stop).");
+                }
+            }
+        }
     }
 
-  public void SetDirection(int newDir)
-{
-    direction = Mathf.Clamp(newDir, -1, 1);
-
-    // Instead of flipping individual sprites:
-    Vector3 scale = transform.localScale;
-    scale.x = Mathf.Abs(scale.x) * (direction > 0 ? 1 : -1);
-    transform.localScale = scale;
-
-    // Keep linear velocity consistent
-    if (started && rb != null)
+    public void SetDirection(int newDir)
     {
-        Vector2 lv = rb.linearVelocity;
-        lv.x = direction * moveSpeed;
-        rb.linearVelocity = lv;
-    }
-}
+        direction = Mathf.Clamp(newDir, -1, 1);
 
+        // Instead of flipping individual sprites:
+        Vector3 scale = transform.localScale;
+        scale.x = Mathf.Abs(scale.x) * (direction > 0 ? 1 : -1);
+        transform.localScale = scale;
+
+        // Keep linear velocity consistent
+        if (started && rb != null)
+        {
+            Vector2 lv = rb.linearVelocity;
+            lv.x = direction * moveSpeed;
+            rb.linearVelocity = lv;
+        }
+    }
 
     public void rbWakeUp()
     {

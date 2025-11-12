@@ -3552,6 +3552,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2386920666622413657, guid: 8be00833ea48e4c4d90daf45302f1b67, type: 3}
+      propertyPath: minX
+      value: -100
+      objectReference: {fileID: 0}
+    - target: {fileID: 2386920666622413657, guid: 8be00833ea48e4c4d90daf45302f1b67, type: 3}
       propertyPath: started
       value: 0
       objectReference: {fileID: 0}
@@ -3564,12 +3568,24 @@ PrefabInstance:
       value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 2386920666622413657, guid: 8be00833ea48e4c4d90daf45302f1b67, type: 3}
+      propertyPath: useXBounds
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2386920666622413657, guid: 8be00833ea48e4c4d90daf45302f1b67, type: 3}
       propertyPath: followCamera
       value: 
       objectReference: {fileID: 519420031}
     - target: {fileID: 2386920666622413657, guid: 8be00833ea48e4c4d90daf45302f1b67, type: 3}
+      propertyPath: stopAtBounds
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2386920666622413657, guid: 8be00833ea48e4c4d90daf45302f1b67, type: 3}
       propertyPath: clampToCameraTop
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2386920666622413657, guid: 8be00833ea48e4c4d90daf45302f1b67, type: 3}
+      propertyPath: clampToCameraFollowBounds
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2856626565056165201, guid: 8be00833ea48e4c4d90daf45302f1b67, type: 3}
       propertyPath: m_Name

@@ -4827,9 +4827,9 @@ EdgeCollider2D:
   - {x: -0.60447407, y: -2.440454}
   - {x: -0.7021198, y: -0.17857957}
   - {x: -0.9129181, y: 1.1261916}
-  - {x: -0.8120384, y: 2.0780187}
-  - {x: -0.040655136, y: 2.6606448}
-  - {x: 0.67666245, y: 1.6477218}
+  - {x: -0.9370117, y: 1.9708995}
+  - {x: -0.040655136, y: 2.7677636}
+  - {x: 0.7480755, y: 1.7369874}
   - {x: 0.9409027, y: 0.81843376}
   - {x: 0.71457005, y: -2.5138514}
   m_AdjacentStartPoint: {x: 0, y: 0}
@@ -5828,6 +5828,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2386920666622413657, guid: 8be00833ea48e4c4d90daf45302f1b67, type: 3}
+      propertyPath: maxX
+      value: 6.69
+      objectReference: {fileID: 0}
+    - target: {fileID: 2386920666622413657, guid: 8be00833ea48e4c4d90daf45302f1b67, type: 3}
       propertyPath: direction
       value: 1
       objectReference: {fileID: 0}
@@ -5836,12 +5840,24 @@ PrefabInstance:
       value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 2386920666622413657, guid: 8be00833ea48e4c4d90daf45302f1b67, type: 3}
+      propertyPath: useXBounds
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2386920666622413657, guid: 8be00833ea48e4c4d90daf45302f1b67, type: 3}
       propertyPath: followCamera
       value: 
       objectReference: {fileID: 733979459}
     - target: {fileID: 2386920666622413657, guid: 8be00833ea48e4c4d90daf45302f1b67, type: 3}
+      propertyPath: stopAtBounds
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2386920666622413657, guid: 8be00833ea48e4c4d90daf45302f1b67, type: 3}
       propertyPath: clampToCameraTop
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2386920666622413657, guid: 8be00833ea48e4c4d90daf45302f1b67, type: 3}
+      propertyPath: clampToCameraFollowBounds
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2856626565056165201, guid: 8be00833ea48e4c4d90daf45302f1b67, type: 3}
       propertyPath: m_Name
