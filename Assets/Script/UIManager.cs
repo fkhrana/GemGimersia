@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -30,6 +31,10 @@ public class UIManager : MonoBehaviour
     public float resumeSoftFallGravityMultiplier = 0.45f;
     [Tooltip("Downward nudge applied to airborne player to ensure falling begins (set to 0 to disable).")]
     public float resumeDownwardNudge = -0.15f;
+
+    [Header("Pause input controls")]
+    [Tooltip("Assign any Buttons that should be disabled while an overlay is open (eg. Pause icon, Pause panel buttons).")]
+    public Button[] pauseButtons;
 
     void Awake()
     {
@@ -168,6 +173,59 @@ public class UIManager : MonoBehaviour
         isPaused = false;
         Time.timeScale = 1f;
         Debug.Log("[UIManager] Countdown finished and inputs released. Game resumed (Time.timeScale = 1).");
+    }
+    #endregion
+
+    #region Pause input helpers
+    /// <summary>
+    /// Enable or disable assigned pause-related Buttons (useful while overlays are open).
+    /// Assign in Inspector all Buttons that should be disabled while an overlay is open.
+    /// </summary>
+    public void SetPauseInputsEnabled(bool enabled)
+    {
+        if (pauseButtons == null || pauseButtons.Length == 0) return;
+        for (int i = 0; i < pauseButtons.Length; i++)
+        {
+            if (pauseButtons[i] != null)
+            {
+                pauseButtons[i].interactable = enabled;
+            }
+        }
+        Debug.Log($"[UIManager] SetPauseInputsEnabled({enabled}) applied to {pauseButtons.Length} buttons.");
+    }
+    #endregion
+
+    #region Overlay helper (for Pause menu buttons)
+    /// <summary>
+    /// Open an overlay scene (Levels / Settings / Credits) via OverlaySceneLoader.
+    /// Use this for Pause menu buttons instead of wiring directly to OverlaySceneLoader,
+    /// so the OnClick target remains valid across scene reloads.
+    /// </summary>
+    /// <param name="sceneName">Name of the overlay scene (must be in Build Settings)</param>
+    public void OpenOverlay(string sceneName)
+    {
+        if (string.IsNullOrEmpty(sceneName))
+        {
+            Debug.LogWarning("[UIManager] OpenOverlay called with empty sceneName.");
+            return;
+        }
+
+        // Ensure OverlaySceneLoader exists (create if missing). OverlaySceneLoader is DontDestroyOnLoad.
+        if (OverlaySceneLoader.Instance == null)
+        {
+            var go = new GameObject("OverlaySceneLoader");
+            go.AddComponent<OverlaySceneLoader>();
+            Debug.Log("[UIManager] Created OverlaySceneLoader instance at runtime.");
+        }
+
+        // Hide pausePanel right away to avoid blocking overlay UI (OverlaySceneLoader will also hide it after load)
+        if (pausePanel != null && isPaused)
+            pausePanel.SetActive(false);
+
+        // Disable pause-related buttons so they can't be used while overlay is open
+        SetPauseInputsEnabled(false);
+
+        OverlaySceneLoader.Instance.LoadOverlay(sceneName);
     }
     #endregion
 

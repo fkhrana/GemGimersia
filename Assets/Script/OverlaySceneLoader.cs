@@ -1,12 +1,13 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// Load/unload small UI scenes as additive overlays (Levels / Settings / Credits).
 /// Keep the gameplay scene loaded and paused while overlays are open.
-/// Use LoadOverlay(sceneName) from the Pause menu; Back button should call
-/// SceneNavigation.BackToMainMenu() which will close the overlay and resume the game.
+/// When an overlay is opened from the Pause popup we hide the pause panel and disable pause inputs so they
+/// don't block the overlay UI. When closing, we re-enable pause inputs and resume.
 /// </summary>
 public class OverlaySceneLoader : MonoBehaviour
 {
@@ -65,6 +66,23 @@ public class OverlaySceneLoader : MonoBehaviour
 
         currentOverlayScene = sceneName;
         Debug.Log($"[OverlaySceneLoader] Overlay '{sceneName}' loaded.");
+
+        // HIDE the Pause panel if the game is paused so it won't block overlay UI.
+        if (UIManager.Instance != null)
+        {
+            if (UIManager.Instance.pausePanel != null && UIManager.Instance.isPaused)
+            {
+                UIManager.Instance.pausePanel.SetActive(false);
+                Debug.Log("[OverlaySceneLoader] Hid UIManager.pausePanel so overlay is usable.");
+            }
+
+            // Disable pause-related inputs/buttons (so pause can't be re-opened while overlay is active)
+            UIManager.Instance.SetPauseInputsEnabled(false);
+        }
+
+        // Clear any current EventSystem selection so overlay buttons won't be blocked
+        if (EventSystem.current != null)
+            EventSystem.current.SetSelectedGameObject(null);
     }
 
     /// <summary>
@@ -83,7 +101,11 @@ public class OverlaySceneLoader : MonoBehaviour
             Debug.Log("[OverlaySceneLoader] No overlay to close - calling resume anyway.");
             // Still call resume in case game was paused and user expects resume
             if (UIManager.Instance != null)
+            {
+                // re-enable pause inputs just in case
+                UIManager.Instance.SetPauseInputsEnabled(true);
                 UIManager.Instance.OnContinueFromPause();
+            }
             yield break;
         }
 
@@ -98,6 +120,11 @@ public class OverlaySceneLoader : MonoBehaviour
         yield return null;
 
         Debug.Log($"[OverlaySceneLoader] Overlay '{closing}' unloaded. Resuming game...");
+
+        // Re-enable pause-related inputs/buttons before resume
+        if (UIManager.Instance != null)
+            UIManager.Instance.SetPauseInputsEnabled(true);
+
         if (UIManager.Instance != null)
             UIManager.Instance.OnContinueFromPause();
     }
