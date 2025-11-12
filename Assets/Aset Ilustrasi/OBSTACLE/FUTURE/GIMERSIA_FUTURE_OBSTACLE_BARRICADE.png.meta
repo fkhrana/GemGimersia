@@ -1,13 +1,10 @@
 fileFormatVersion: 2
-guid: 8f66d9762a25cca4a814a1fc642eac04
+guid: cc882f3033b72bf47a38d0739cb3ac34
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 9218097589135510469
-    second: GIMERSIA_FUTURE_BG START_0
-  - first:
-      213: -3502142527911554841
-    second: GIMERSIA_FUTURE_BG START_1
+      213: -4392274803069032740
+    second: GIMERSIA_FUTURE_OBSTACLE_BARRICADE_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -49,7 +46,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -103,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: GIMERSIA_FUTURE_BG START_0
+      name: GIMERSIA_FUTURE_OBSTACLE_BARRICADE_0
       rect:
         serializedVersion: 2
-        x: 387
-        y: 0
-        width: 1533
-        height: 1060
+        x: 1166
+        y: 136
+        width: 283
+        height: 323
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -118,30 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5cb8e41fae24def70800000000000000
-      internalID: 9218097589135510469
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: GIMERSIA_FUTURE_BG START_1
-      rect:
-        serializedVersion: 2
-        x: 1338
-        y: 1047
-        width: 7
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 7e01b0f0de3e56fc0800000000000000
-      internalID: -3502142527911554841
+      spriteID: cd6eb2f76518b03c0800000000000000
+      internalID: -4392274803069032740
       vertices: []
       indices: 
       edges: []
@@ -150,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -160,8 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      GIMERSIA_FUTURE_BG START_0: 9218097589135510469
-      GIMERSIA_FUTURE_BG START_1: -3502142527911554841
+      GIMERSIA_FUTURE_OBSTACLE_BARRICADE_0: -4392274803069032740
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
