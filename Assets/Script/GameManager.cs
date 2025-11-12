@@ -220,7 +220,7 @@ public class GameManager : MonoBehaviour
         Debug.Log("[GameManager] OnPlayerDied - Playing animation and sound.");
 
         if (animator != null)
-            animator.SetTrigger("Die");
+            animator.Play("Die");
 
         if (hit != null)
             hit.Play();

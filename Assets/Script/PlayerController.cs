@@ -411,6 +411,7 @@ public class PlayerController : MonoBehaviour
             else
                 Debug.LogError("[PlayerController] OnTriggerEnter2D - GameManager.Instance is null.");
         }
+
         // Keep your existing key detection
         if (other.CompareTag("Key"))
         {
