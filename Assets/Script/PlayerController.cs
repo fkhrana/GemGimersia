@@ -276,51 +276,24 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void SetDirection(int newDir)
+  public void SetDirection(int newDir)
+{
+    direction = Mathf.Clamp(newDir, -1, 1);
+
+    // Instead of flipping individual sprites:
+    Vector3 scale = transform.localScale;
+    scale.x = Mathf.Abs(scale.x) * (direction > 0 ? 1 : -1);
+    transform.localScale = scale;
+
+    // Keep linear velocity consistent
+    if (started && rb != null)
     {
-        direction = Mathf.Clamp(newDir, -1, 1);
-
-        // apply flip relative to inspector initialFlipX so editor flip is respected
-        bool shouldFaceRight = direction > 0;
-
-        if (sr != null)
-        {
-            sr.flipX = initialFlipX ^ shouldFaceRight;
-        }
-
-        // apply same logical flip to child SpriteRenderers (respect their initial inspector flip)
-        for (int i = 0; i < childSpriteRenderers.Length; i++)
-        {
-            var cs = childSpriteRenderers[i];
-            if (cs == null) continue;
-            bool init = (i < childInitialFlip.Length) ? childInitialFlip[i] : false;
-            cs.flipX = init ^ shouldFaceRight;
-        }
-
-        // flip transforms by scale for those specified in childFlipScale (optional)
-        for (int i = 0; i < childFlipScale.Length; i++)
-        {
-            var t = childFlipScale[i];
-            if (t == null) continue;
-            Vector3 initScale = (i < childInitialScale.Length) ? childInitialScale[i] : t.localScale;
-            float absX = Mathf.Abs(initScale.x);
-            // set x to +abs for facing right, -abs for facing left
-            float newX = shouldFaceRight ? absX : -absX;
-            t.localScale = new Vector3(newX, initScale.y, initScale.z);
-        }
-
-        if (started)
-        {
-            Vector2 lv = rb.linearVelocity;
-            lv.x = direction * moveSpeed;
-            rb.linearVelocity = lv;
-            Debug.Log($"[PlayerController] SetDirection called. New direction={direction}, linearVelocity.x={rb.linearVelocity.x}");
-        }
-        else
-        {
-            Debug.Log($"[PlayerController] SetDirection called. New direction={direction}, player not started yet.");
-        }
+        Vector2 lv = rb.linearVelocity;
+        lv.x = direction * moveSpeed;
+        rb.linearVelocity = lv;
     }
+}
+
 
     public void rbWakeUp()
     {
