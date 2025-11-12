@@ -37,6 +37,9 @@ public class PlayerController : MonoBehaviour
     SpriteRenderer sr;
     GameManager gm;
 
+    // preserve inspector flip state
+    bool initialFlipX = false;
+
     // ignore input after resume (unscaled time)
     float ignoreInputUntil = 0f;
     // require release of held inputs before accepting new input
@@ -57,6 +60,10 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
+
+        // save inspector flipX so runtime flip respects inspector default
+        if (sr != null) initialFlipX = sr.flipX;
+
         // cache gravity scale early
         if (rb != null) originalGravityScale = rb.gravityScale;
         Debug.Log("[PlayerController] Awake - components cached.");
@@ -224,7 +231,14 @@ public class PlayerController : MonoBehaviour
     public void SetDirection(int newDir)
     {
         direction = Mathf.Clamp(newDir, -1, 1);
-        if (sr != null) sr.flipX = direction > 0 ? true : false;
+
+        // apply flip relative to inspector initialFlipX so editor flip is respected
+        if (sr != null)
+        {
+            bool shouldFaceRight = direction > 0;
+            sr.flipX = initialFlipX ^ shouldFaceRight;
+        }
+
         if (started)
         {
             Vector2 lv = rb.linearVelocity;
