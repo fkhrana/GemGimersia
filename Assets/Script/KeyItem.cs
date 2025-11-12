@@ -4,12 +4,17 @@ using UnityEngine.SceneManagement;
 [RequireComponent(typeof(Collider2D))]
 public class KeyItem : MonoBehaviour
 {
+    [Header("Pickup Settings")]
     public ParticleSystem pickupEffect;
     public AudioClip pickupSfx;
+    public float pickupDelay = 1.0f; // Delay before loading next scene
+
     AudioSource audioSource;
+    bool pickedUp = false;
 
     void Awake()
     {
+        // Setup audio source if a sound is assigned
         if (pickupSfx != null)
         {
             audioSource = gameObject.AddComponent<AudioSource>();
@@ -21,25 +26,37 @@ public class KeyItem : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (!other.CompareTag("Player")) return;
+        if (pickedUp || !other.CompareTag("Player"))
+            return;
 
-        Debug.Log("[KeyItem] Player triggered Key. Recording position, playing effect, and loading GameplayPast.");
+        pickedUp = true;
+        Debug.Log("[KeyItem] Player triggered Key. Playing effects and scheduling scene load.");
 
-        // Record key pickup position and mark session
+        // Record pickup in session
         GameSession.hasKey = true;
         GameSession.lastKeyPosition = other.transform.position;
         Debug.Log($"[KeyItem] lastKeyPosition = {GameSession.lastKeyPosition}");
 
+        // Spawn visual effect
         if (pickupEffect != null)
             Instantiate(pickupEffect, transform.position, Quaternion.identity);
 
+        // Play sound
         if (audioSource != null)
             audioSource.Play();
 
-        // Disable visuals
-        gameObject.SetActive(false);
+        // Hide key immediately (so it looks picked up)
+        GetComponent<Collider2D>().enabled = false;
+        foreach (var sr in GetComponentsInChildren<SpriteRenderer>())
+            sr.enabled = false;
 
-        // Load Past scene
+        // Delay before scene transition
+        Invoke(nameof(LoadNextScene), pickupDelay);
+    }
+
+    void LoadNextScene()
+    {
+        Debug.Log("[KeyItem] Loading GameplayPast scene after delay.");
         SceneManager.LoadScene(SceneNames.GameplayPast);
     }
 }

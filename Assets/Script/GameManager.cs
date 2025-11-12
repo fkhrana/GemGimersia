@@ -1,4 +1,5 @@
-using System.Collections;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -38,7 +39,13 @@ public class GameManager : MonoBehaviour
     [Tooltip("If true and levelBoundsCollider assigned, compute camera bounds automatically.")]
     public bool useAutoCameraBounds = true;
 
+    [Header("Settings")]
+    public float restartDelay = 2.5f; // extra wait after animation/sound
+
+
     bool gameOver = false;
+    public Animator animator;
+    public AudioSource hit;
 
     void Awake()
     {
@@ -203,22 +210,41 @@ public class GameManager : MonoBehaviour
     }
 
     // Called by PlayerController on collision with obstacle/ground/ceiling
+
+    // ✅ Called by PlayerController when dying
     public void OnPlayerDied()
     {
         if (gameOver) return;
         gameOver = true;
-        Debug.Log("[GameManager] OnPlayerDied - player died. Restarting to GameplayFuture and resetting session.");
+
+        Debug.Log("[GameManager] OnPlayerDied - Playing animation and sound.");
+
+        if (animator != null)
+            animator.SetTrigger("Die");
+
+        if (hit != null)
+            hit.Play();
+
         GameSession.Reset();
-        StartCoroutine(RestartToFutureNextFrame());
+        StartCoroutine(RestartAfterDelay());
     }
 
-    IEnumerator RestartToFutureNextFrame()
+    IEnumerator RestartAfterDelay()
     {
-        // brief frame wait to allow any collision sounds/effects
-        yield return null;
-        Debug.Log("[GameManager] Restarting: Loading GameplayFuture scene now.");
+        // Wait for animation or sound duration + manual delay
+        float waitTime = restartDelay;
+
+        // if audio clip is longer, use that time instead
+        if (hit != null && hit.clip != null)
+            waitTime = Mathf.Max(waitTime, hit.clip.length + 0.5f);
+
+        yield return new WaitForSeconds(waitTime);
+
+        Debug.Log("[GameManager] Restarting GameplayFuture...");
         SceneManager.LoadScene(SceneNames.GameplayFuture);
     }
+
+    
 
     // Called by MachineTrigger when player reaches the time machine in Past
     public void OnPlayerReachedMachine()

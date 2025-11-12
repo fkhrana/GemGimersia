@@ -3,6 +3,8 @@ using UnityEngine;
 [RequireComponent(typeof(Collider2D))]
 public class MachineTrigger : MonoBehaviour
 {
+
+    public AudioSource win;
     void Awake()
     {
         Debug.Log("[MachineTrigger] Awake - Machine trigger ready.");
@@ -15,6 +17,7 @@ public class MachineTrigger : MonoBehaviour
         if (GameSession.hasKey)
         {
             Debug.Log("[MachineTrigger] Player has key - notifying GameManager for win.");
+            win.Play();
             if (GameManager.Instance != null)
                 GameManager.Instance.OnPlayerReachedMachine();
         }

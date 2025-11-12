@@ -394,24 +394,31 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+    void OnTriggerEnter2D(Collider2D other)
     {
-        if (collision.collider.CompareTag("Obstacle") ||
-            collision.collider.CompareTag("Ground") ||
-            collision.collider.CompareTag("Ceiling"))
+        // Detect ground/obstacle/ceiling just like before
+        if (other.CompareTag("Obstacle") ||
+            other.CompareTag("Ground") ||
+            other.CompareTag("Ceiling"))
         {
-            Debug.Log($"[PlayerController] OnCollisionEnter2D with '{collision.collider.tag}'. Triggering OnPlayerDied.");
-            if (gm == null) gm = GameManager.Instance;
-            if (gm != null) gm.OnPlayerDied();
-            else Debug.LogError("[PlayerController] OnCollisionEnter2D - GameManager.Instance is null.");
+            Debug.Log($"[PlayerController] OnTriggerEnter2D with '{other.tag}'. Triggering OnPlayerDied.");
+
+            if (gm == null)
+                gm = GameManager.Instance;
+
+            if (gm != null)
+                gm.OnPlayerDied();
+            else
+                Debug.LogError("[PlayerController] OnTriggerEnter2D - GameManager.Instance is null.");
+        }
+        // Keep your existing key detection
+        if (other.CompareTag("Key"))
+        {
+
+            Debug.Log("[PlayerController] OnTriggerEnter2D detected Key trigger. (Key handling is in KeyItem)");
         }
     }
 
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Key"))
-            Debug.Log("[PlayerController] OnTriggerEnter2D detected Key trigger. (Key handling is in KeyItem)");
-    }
 
     // public API: ignore input for a short unscaled time window and require release of held inputs
     public void IgnoreInputForSeconds(float seconds)
