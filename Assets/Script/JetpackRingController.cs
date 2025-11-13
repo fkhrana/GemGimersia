@@ -7,10 +7,16 @@ public class JetpackRingController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetButtonDown("Jump"))
+        // Skip if not active (during cutscene or disabled by GameManager)
+        if (!enabled) return;
+
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
         {
-            ringPulseEffect.Play();
-            ringPulseSound.Play();
+            if (ringPulseEffect != null)
+                ringPulseEffect.Play();
+
+            if (ringPulseSound != null && ringPulseSound.enabled)
+                ringPulseSound.Play();
         }
     }
 }

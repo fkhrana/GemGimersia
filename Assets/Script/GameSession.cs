@@ -8,6 +8,7 @@ public static class GameSession
 {
     public static Vector3 lastKeyPosition = Vector3.zero;
     public static bool hasKey = false;
+    public static bool hasPlayedIntro = false;
 
     public static void Reset()
     {

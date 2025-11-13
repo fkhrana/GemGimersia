@@ -289,4 +289,30 @@ public class GameManager : MonoBehaviour
         Debug.Log("[GameManager] RestartCurrent called. Reloading current scene.");
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
+
+    public void StartGameplay()
+    {
+        Debug.Log("[GameManager] Cutscene done. Enabling gameplay.");
+        if (player != null)
+        {
+            player.started = true;
+            // allow input and movement player.rbWakeUp(); 
+        }
+        if (UIManager.Instance != null)
+            UIManager.Instance.ShowStartText("Press Space or Left Click to start");
+    }
+
+    public void SetGameplayActive(bool active)
+    {
+        if (player != null)
+            player.enabled = active;
+
+        // If you have jetpack effect scripts
+        var jetpack = FindObjectOfType<JetpackRingController>();
+        if (jetpack != null)
+            jetpack.enabled = active;
+
+        Debug.Log($"[GameManager] Gameplay {(active ? "enabled" : "disabled")}.");
+    }
+
 }
